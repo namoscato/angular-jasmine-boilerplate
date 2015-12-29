@@ -7,10 +7,11 @@ var _ = require('lodash'),
  * @dgProcessor dependencyProcessor
  * @description Compiles a list of relevant dependency meta data
  */
-module.exports = function dependencyProcessor() {
+module.exports = function dependencyProcessor(log) {
 
     return {
         $process: process,
+        $runAfter: ['tags-extracted'],
         $runBefore: ['rendering-docs']
     };
 
@@ -37,6 +38,8 @@ module.exports = function dependencyProcessor() {
                     variable: variable + 'Spy'
                 });
             });
+
+            log.debug('Compiled ' + dependencies.spies.length + ' dependencies');
 
             dependencies.variableDefinitions = '    var ' + _.map(dependencies.spies, 'variable').join(",\n        ") + ';';
 
