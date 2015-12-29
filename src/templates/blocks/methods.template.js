@@ -3,7 +3,7 @@
      * {$ method.name $}
      */
     
-    describe('When {$ method.description $}', function() {
+    describe('When {$ method.descriptionSummary $}', function() {
         beforeEach(function() {
             target.{$ method.name $}();
         });

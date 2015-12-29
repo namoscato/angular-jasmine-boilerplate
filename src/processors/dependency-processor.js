@@ -1,24 +1,21 @@
 'use strict';
 
-var _ = require('lodash'),
-    canonicalPath = require('canonical-path');
+var _ = require('lodash');
 
 /**
- * @dgProcessor dependencyProcessor
+ * @dgProcessor dependencies
  * @description Compiles a list of relevant dependency meta data
  */
 module.exports = function dependencyProcessor(log) {
 
     return {
+        name: 'dependencies',
         $process: process,
         $runAfter: ['tags-extracted'],
         $runBefore: ['rendering-docs']
     };
 
     function process(docs) {
-        var modules = {},
-            navigationItem;
-
         docs.forEach(function(doc) {
             var dependencies = {
                 spies: []

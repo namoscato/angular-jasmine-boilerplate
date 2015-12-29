@@ -10,6 +10,7 @@ module.exports = function(options) {
     var self = new Package('angularJasmineBoilerplate', [require('dgeni-packages/ngdoc')])
 
     self.processor(require('./processors/dependency-processor'));
+    self.processor(require('./processors/description-processor'));
 
     self.config(function(computeIdsProcessor, computePathsProcessor, getAliases, log, readFilesProcessor, templateFinder, writeFilesProcessor) {
         readFilesProcessor.basePath = options.basePath;
