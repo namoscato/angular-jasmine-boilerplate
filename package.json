@@ -6,6 +6,7 @@
     "canonical-path": "0.0.2",
     "dgeni": "^0.4.1",
     "dgeni-packages": "^0.11.1",
+    "jsonfile": "^2.2.3",
     "lodash": "^3.10.1",
     "minimist": "^1.2.0"
   },
