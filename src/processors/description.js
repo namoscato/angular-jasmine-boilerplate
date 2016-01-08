@@ -7,7 +7,6 @@
 module.exports = function descriptionProcessor() {
 
     return {
-        name: 'description',
         $process: process,
         $runAfter: ['tags-extracted'],
         $runBefore: ['rendering-docs']

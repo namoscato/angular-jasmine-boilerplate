@@ -9,7 +9,6 @@ var _ = require('lodash');
 module.exports = function dependencyProcessor(log) {
 
     return {
-        name: 'dependencies',
         $process: process,
         $runAfter: ['tags-extracted'],
         $runBefore: ['rendering-docs']

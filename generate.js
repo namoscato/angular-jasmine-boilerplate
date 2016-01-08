@@ -1,13 +1,15 @@
 #!/usr/bin/env node
 
-var Dgeni = require('dgeni'),
+var colors = require('colors'),
+    Dgeni = require('dgeni'),
     jsonfile = require('jsonfile'),
     minimist = require('minimist');
 
 var config = {},
     configFile,
     dgeni,
-    options;
+    options,
+    summary;
 
 options = minimist(process.argv.slice(2), {
     boolean: 'save',
@@ -30,8 +32,6 @@ if (!config.basePath || !config.testPath) {
             throw Error('Base path not specified via --base-path');
         }
 
-        console.log('Using "base-path = ' + configFile.basePath + '"');
-
         config.basePath = configFile.basePath;
     }
 
@@ -40,11 +40,12 @@ if (!config.basePath || !config.testPath) {
             throw Error('Test path not specified via --test-path');
         }
 
-        console.log('Using "test-path = ' + configFile.testPath + '"');
-
         config.testPath = configFile.testPath;
     }
 }
+
+console.log('base-path = ' + config.basePath);
+console.log('test-path = ' + config.testPath);
 
 if (options._.length > 0) {
     dgeni = new Dgeni([
@@ -54,8 +55,6 @@ if (options._.length > 0) {
             sources: options._
         })
     ]);
-
-    console.log('Generating boilerplate for ' + options._.length + ' components...');
 
     dgeni.generate();
 }

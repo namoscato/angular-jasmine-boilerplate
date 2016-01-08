@@ -9,10 +9,14 @@ module.exports = function(options) {
 
     var self = new Package('angularJasmineBoilerplate', [require('dgeni-packages/ngdoc')])
 
-    self.processor(require('./processors/dependency-processor'));
-    self.processor(require('./processors/description-processor'));
+    self.processor(require('./processors/dependency'));
+    self.processor(require('./processors/description'));
+    self.processor(require('./processors/log-output-files'));
+    self.processor(require('./processors/log-source-files'));
 
     self.config(function(computeIdsProcessor, computePathsProcessor, getAliases, log, readFilesProcessor, templateFinder, writeFilesProcessor) {
+        log.remove(log.transports.Console);
+
         readFilesProcessor.basePath = options.basePath;
         readFilesProcessor.sourceFiles = options.sources;
 

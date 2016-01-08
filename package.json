@@ -4,6 +4,7 @@
   "description": "AngularJS Jasmine Boilerplate Generator",
   "devDependencies": {
     "canonical-path": "0.0.2",
+    "colors": "^1.1.2",
     "dgeni": "^0.4.1",
     "dgeni-packages": "^0.11.1",
     "jsonfile": "^2.2.3",
