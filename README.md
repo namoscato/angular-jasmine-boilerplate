@@ -1,4 +1,4 @@
-# AngularJS Jasmine Boilerplate Generation
+# AngularJS Jasmine Boilerplate Generation [![Build Status](https://travis-ci.org/namoscato/angular-jasmine-boilerplate.svg?branch=master)](https://travis-ci.org/namoscato/angular-jasmine-boilerplate)
 
 Generates boilerplate [Jasmine](http://jasmine.github.io/) tests from [annotated](https://github.com/angular/angular.js/wiki/Writing-AngularJS-Documentation) [AngularJS](https://angularjs.org/) components via [Dgeni](https://github.com/angular/dgeni).
 
