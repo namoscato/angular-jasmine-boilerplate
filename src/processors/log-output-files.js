@@ -1,6 +1,7 @@
 'use strict';
 
-var canonicalPath = require('canonical-path');
+var canonicalPath = require('canonical-path'),
+    colors = require('colors/safe');
 
 /**
  * @dgProcessor dependencies
@@ -9,22 +10,26 @@ var canonicalPath = require('canonical-path');
 module.exports = function logOutputFilesProcessor(writeFilesProcessor) {
 
     return {
-        $process: process,
-        $runAfter: ['writing-files']
+        $runAfter: ['writing-files'],
+        $process: function(docs) {
+            var pathsHash = {};
+
+            console.log('\nWriting boilerplate files...');
+
+            docs.forEach(function(doc) {
+                if (typeof pathsHash[doc.outputPath] !== 'undefined') {
+                    return;
+                }
+
+                console.log(
+                    colors.green(
+                        canonicalPath.relative(writeFilesProcessor.outputFolder, doc.outputPath)
+                    )
+                );
+
+                pathsHash[doc.outputPath] = true;
+            });
+        }
     };
 
-    function process(docs) {
-        var pathsHash = {};
-
-        console.log('\nWriting boilerplate files...');
-
-        docs.forEach(function(doc) {
-            if (typeof pathsHash[doc.outputPath] !== 'undefined') {
-                return;
-            }
-
-            console.log(canonicalPath.relative(writeFilesProcessor.outputFolder, doc.outputPath).green);
-            pathsHash[doc.outputPath] = true;
-        });
-    }
 };

@@ -9,37 +9,39 @@ var _ = require('lodash');
 module.exports = function dependencyProcessor(log) {
 
     return {
-        $process: process,
         $runAfter: ['tags-extracted'],
-        $runBefore: ['rendering-docs']
-    };
+        $runBefore: ['rendering-docs'],
+        $process: function(docs) {
+            docs.forEach(function(doc) {
+                var dependencies = {
+                    spies: [],
+                    variableDefinitions: ''
+                };
 
-    function process(docs) {
-        docs.forEach(function(doc) {
-            var dependencies = {
-                spies: []
-            };
+                if (typeof doc.requires !== 'undefined') {
+                    _.sortBy(doc.requires, function(require) {
+                        return require;
+                    }).forEach(function(dependency) {
+                        var variable = dependency;
 
-            _.sortBy(doc.requires, function(require) {
-                return require;
-            }).forEach(function(dependency) {
-                var variable = dependency;
+                        if (dependency.charAt(0) === '$') {
+                            variable = dependency.substr(1);
+                        }
 
-                if (dependency.charAt(0) === '$') {
-                    variable = dependency.substr(1);
+                        dependencies.spies.push({
+                            dependency: dependency,
+                            variable: variable + 'Spy'
+                        });
+                    });
+
+                    dependencies.variableDefinitions = "\n    var " + _.map(dependencies.spies, 'variable').join(",\n        ") + ";\n";
                 }
 
-                dependencies.spies.push({
-                    dependency: dependency,
-                    variable: variable + 'Spy'
-                });
+                log.debug('Compiled ' + dependencies.spies.length + ' dependencies');
+
+                doc.dependencies = dependencies;
             });
+        }
+    };
 
-            log.debug('Compiled ' + dependencies.spies.length + ' dependencies');
-
-            dependencies.variableDefinitions = '    var ' + _.map(dependencies.spies, 'variable').join(",\n        ") + ';';
-
-            doc.dependencies = dependencies;
-        });
-    }
 };

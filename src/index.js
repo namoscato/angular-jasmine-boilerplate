@@ -7,7 +7,7 @@ module.exports = function(options) {
 
     var Package = dgeni.Package;
 
-    var self = new Package('angularJasmineBoilerplate', [require('dgeni-packages/ngdoc')])
+    var self = new Package('angularJasmineBoilerplate', [require('dgeni-packages/ngdoc')]);
 
     self.processor(require('./processors/dependency'));
     self.processor(require('./processors/description'));
