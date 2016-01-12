@@ -13,6 +13,10 @@ module.exports = function descriptionProcessor() {
             var parts;
 
             docs.forEach(function(doc) {
+                if (typeof doc.methods === 'undefined') {
+                    return;
+                }
+
                 doc.methods.forEach(function(method) {
                     parts = method.description.split('\n');
 

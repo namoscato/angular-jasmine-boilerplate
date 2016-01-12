@@ -9,6 +9,22 @@ describe('descriptionProcessor', function() {
         target = descriptionProcessor();
     });
 
+    describe('When processing a component without any methods', function() {
+        beforeEach(function() {
+            docs = [
+                {}
+            ];
+
+            target.$process(docs);
+        });
+
+        it('should gracefully ignore the lack of methods', function() {
+            expect(docs).toEqual([
+                {}
+            ]);
+        });
+    });
+
     describe('When processing a method without a description', function() {
         beforeEach(function() {
             docs = [
