@@ -3,6 +3,9 @@
   "license": "MIT",
   "version": "1.0.0",
   "description": "AngularJS Jasmine Boilerplate Generator",
+  "bin": {
+    "angular-jasmine-boilerplate": "bin/generate.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/namoscato/angular-jasmine-boilerplate"
@@ -17,7 +20,7 @@
     "dgeni-packages": "^0.11.1",
     "jasmine-node": "^2.0.0-beta4",
     "jsonfile": "^2.2.3",
-    "lodash": "^3.10.1",
+    "lodash": "^4.5.1",
     "minimist": "^1.2.0",
     "rewire": "^2.5.1"
   }

@@ -49,7 +49,7 @@ console.log('test-path = ' + config.testPath);
 
 if (options._.length > 0) {
     dgeni = new Dgeni([
-        require('./src/index')({
+        require('../src/index')({
             basePath: config.basePath,
             testPath: config.testPath,
             sources: options._
