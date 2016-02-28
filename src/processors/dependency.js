@@ -40,6 +40,8 @@ module.exports = function dependencyProcessor(log) {
                         if (calls !== null) {
                             methods = '';
 
+                            calls = _.sortedUniq(calls.sort());
+
                             calls.forEach(function(call) {
                                 var index = call.indexOf('.')+1;
 

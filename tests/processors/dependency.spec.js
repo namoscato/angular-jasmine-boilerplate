@@ -109,7 +109,7 @@ describe('dependencyProcessor', function() {
                     },
                     {
                         fileInfo: {
-                            content: '$dep.(); $depinvalidMethodCall(); $dep.variable; $dep.method1(); aDep.method2(); aDep.method3(); bdep.noMatchOnLowercaseD()'
+                            content: '$dep.(); $depinvalidMethodCall(); $dep.variable; $dep.method1(); aDep.method2(); aDep.method3(); aDep.method3(); aDep.method3(); bdep.noMatchOnLowercaseD(); bDep.Z(); bDep.A();'
                         },
                         requires: [
                             'bDep',
@@ -122,7 +122,7 @@ describe('dependencyProcessor', function() {
                 target.$process(docs);
             });
 
-            it('should output a proper method string', function() {
+            it('should output a deduped, sorted method string', function() {
                 expect(docs[0].dependencies).toEqual({
                     spies: [
                         {
@@ -148,7 +148,7 @@ describe('dependencyProcessor', function() {
                         },
                         {
                             dependency: 'bDep',
-                            methods : "''",
+                            methods : "'A', 'Z'",
                             variable: 'bDepSpy'
                         }
                     ],
