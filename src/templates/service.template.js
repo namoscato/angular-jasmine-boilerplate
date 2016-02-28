@@ -5,7 +5,7 @@
     beforeEach(module(function($provide) {
     {%- for spy in doc.dependencies.spies %}
         $provide.service('{$ spy.dependency $}', function() {
-            {$ spy.variable $} = jasmine.createSpyObj('{$ spy.dependency $}', ['']);
+            {$ spy.variable $} = jasmine.createSpyObj('{$ spy.dependency $}', [{$ spy.methods $}]);
             return {$ spy.variable $};
         });
     {% endfor -%}

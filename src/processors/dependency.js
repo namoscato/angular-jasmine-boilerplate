@@ -22,14 +22,36 @@ module.exports = function dependencyProcessor(log) {
                     _.sortBy(doc.requires, function(require) {
                         return require;
                     }).forEach(function(dependency) {
+                        var isInternalService = dependency.charAt(0) === '$';
+
+                        // Set variable
                         var variable = dependency;
 
-                        if (dependency.charAt(0) === '$') {
+                        if (isInternalService) {
                             variable = dependency.substr(1);
+                        }
+
+                        // Set methods
+                        var escape = (isInternalService ? '\\' : '');
+                        var regEx = new RegExp('(' + escape + dependency + ')[.][A-Za-z0-9_]+[(]', 'g');
+                        var calls = doc.fileInfo.content.match(regEx);
+                        var methods = "''";
+
+                        if (calls !== null) {
+                            methods = '';
+
+                            calls.forEach(function(call) {
+                                var index = call.indexOf('.')+1;
+
+                                methods += "'" + call.substr(index, call.length-index-1) + "', ";
+                            });
+
+                            methods = methods.substr(0, methods.length-2);
                         }
 
                         dependencies.spies.push({
                             dependency: dependency,
+                            methods: methods,
                             variable: variable + 'Spy'
                         });
                     });

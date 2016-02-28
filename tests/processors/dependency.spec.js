@@ -35,52 +35,125 @@ describe('dependencyProcessor', function() {
     });
 
     describe('When processing dependencies', function() {
-        beforeEach(function() {
-            docs = [
-                {
-                    requires: [
-                        'dep'
-                    ]
-                },
-                {
-                    requires: [
-                        'bDep',
-                        '$dep',
-                        'aDep'
-                    ]
-                }
-            ];
-
-            target.$process(docs);
-        });
-
-        it('should output relevant spies', function() {
-            expect(docs[0].dependencies).toEqual({
-                spies: [
+        describe('in general', function() {
+            beforeEach(function() {
+                docs = [
                     {
-                        dependency: 'dep',
-                        variable: 'depSpy'
+                        fileInfo: {
+                            content: 'content'
+                        },
+                        requires: [
+                            'dep'
+                        ]
+                    },
+                    {
+                        fileInfo: {
+                            content: 'content'
+                        },
+                        requires: [
+                            'bDep',
+                            '$dep',
+                            'aDep'
+                        ]
                     }
-                ],
-                variableDefinitions: "\n    var depSpy;\n"
+                ];
+
+                target.$process(docs);
             });
 
-            expect(docs[1].dependencies).toEqual({
-                spies: [
+            it('should output relevant spies', function() {
+                expect(docs[0].dependencies).toEqual({
+                    spies: [
+                        {
+                            dependency: 'dep',
+                            methods : "''", 
+                            variable: 'depSpy'
+                        }
+                    ],
+                    variableDefinitions: "\n    var depSpy;\n"
+                });
+
+                expect(docs[1].dependencies).toEqual({
+                    spies: [
+                        {
+                            dependency: '$dep',
+                            methods : "''",
+                            variable: 'depSpy'
+                        },
+                        {
+                            dependency: 'aDep',
+                            methods : "''",
+                            variable: 'aDepSpy'
+                        },
+                        {
+                            dependency: 'bDep',
+                            methods : "''",
+                            variable: 'bDepSpy'
+                        }
+                    ],
+                    variableDefinitions: "\n    var depSpy,\n        aDepSpy,\n        bDepSpy;\n"
+                });
+            });
+        });
+
+        describe('with method calls', function() {
+            beforeEach(function() {
+                docs = [
                     {
-                        dependency: '$dep',
-                        variable: 'depSpy'
+                        fileInfo: {
+                            content: 'no method calls'
+                        },
+                        requires: [
+                            'dep'
+                        ]
                     },
                     {
-                        dependency: 'aDep',
-                        variable: 'aDepSpy'
-                    },
-                    {
-                        dependency: 'bDep',
-                        variable: 'bDepSpy'
+                        fileInfo: {
+                            content: '$dep.(); $depinvalidMethodCall(); $dep.variable; $dep.method1(); aDep.method2(); aDep.method3(); bdep.noMatchOnLowercaseD()'
+                        },
+                        requires: [
+                            'bDep',
+                            '$dep',
+                            'aDep'
+                        ]
                     }
-                ],
-                variableDefinitions: "\n    var depSpy,\n        aDepSpy,\n        bDepSpy;\n"
+                ];
+
+                target.$process(docs);
+            });
+
+            it('should output a proper method string', function() {
+                expect(docs[0].dependencies).toEqual({
+                    spies: [
+                        {
+                            dependency: 'dep',
+                            methods : "''", 
+                            variable: 'depSpy'
+                        }
+                    ],
+                    variableDefinitions: "\n    var depSpy;\n"
+                });
+
+                expect(docs[1].dependencies).toEqual({
+                    spies: [
+                        {
+                            dependency: '$dep',
+                            methods : "'method1'",
+                            variable: 'depSpy'
+                        },
+                        {
+                            dependency: 'aDep',
+                            methods : "'method2', 'method3'",
+                            variable: 'aDepSpy'
+                        },
+                        {
+                            dependency: 'bDep',
+                            methods : "''",
+                            variable: 'bDepSpy'
+                        }
+                    ],
+                    variableDefinitions: "\n    var depSpy,\n        aDepSpy,\n        bDepSpy;\n"
+                });
             });
         });
     });
