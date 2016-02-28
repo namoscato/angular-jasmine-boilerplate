@@ -45,15 +45,11 @@ module.exports = function logOutputFilesProcessor(writeFilesProcessor) {
                     );
 
                     if (isWriting) {
-                        throw { code: 'ENOENT' }; // Continue if user confirms overwrite
+                        throw {}; // Continue if user confirms overwrite
                     }
 
                     docs.splice(index, 1); // Otherwise, remove document from processing array
                 } catch (e) {
-                    if (e.code !== 'ENOENT') {
-                        throw e;
-                    }
-
                     console.log(colors.green(relativePath));
                 }
 
