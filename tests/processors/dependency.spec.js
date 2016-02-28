@@ -109,7 +109,7 @@ describe('dependencyProcessor', function() {
                     },
                     {
                         fileInfo: {
-                            content: '$dep.(); $depinvalidMethodCall(); $dep.variable; $dep.method1(); aDep  .  method2(); aDep.method3(); aDep.method3(); aDep.method3  (); bdep.noMatchOnLowercaseD(); bDep.Z   (); bDep.A();'
+                            content: '$dep.(); $depinvalidMethodCall(); $dep.property; $dep.method1(); aDep  .  method2(); aDep.method3(); aDep .  method3(); aDep.method3  (); bdep.noMatchOnLowercaseD(); bDep.Z   (); bDep.A();'
                         },
                         requires: [
                             'bDep',
