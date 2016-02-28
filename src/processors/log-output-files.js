@@ -53,7 +53,7 @@ module.exports = function logOutputFilesProcessor(writeFilesProcessor) {
                     console.log(colors.green(relativePath));
                 }
 
-                pathsHash[doc.outputPath] = isWriting;   
+                pathsHash[doc.outputPath] = isWriting;
             }
         }
     };

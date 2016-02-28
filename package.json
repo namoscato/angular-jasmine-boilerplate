@@ -1,7 +1,7 @@
 {
   "name": "angular-jasmine-boilerplate",
   "license": "MIT",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "AngularJS Jasmine Boilerplate Generator",
   "bin": {
     "angular-jasmine-boilerplate": "bin/generate.js"
@@ -13,17 +13,19 @@
   "scripts": {
     "test": "jasmine-node tests/"
   },
-  "devDependencies": {
+  "dependencies": {
     "canonical-path": "0.0.2",
     "colors": "^1.1.2",
     "dgeni": "^0.4.1",
     "dgeni-packages": "^0.11.1",
     "fs": "0.0.2",
-    "jasmine-node": "^2.0.0-beta4",
     "jsonfile": "^2.2.3",
     "lodash": "^4.5.1",
     "minimist": "^1.2.0",
     "readline-sync": "^1.4.1",
     "rewire": "^2.5.1"
+  },
+  "devDependencies": {
+    "jasmine-node": "^2.0.0-beta4"
   }
 }
