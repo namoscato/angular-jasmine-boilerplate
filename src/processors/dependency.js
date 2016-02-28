@@ -31,29 +31,35 @@ module.exports = function dependencyProcessor(log) {
                             variable = dependency.substr(1);
                         }
 
-                        // Set methods
+                        // Set method
                         var escape = (isInternalService ? '\\' : '');
-                        var regEx = new RegExp('(' + escape + dependency + ')[.][A-Za-z0-9_]+[(]', 'g');
+                        var regEx = new RegExp('(' + escape + dependency + ')\\s*[.]\\s*[A-Za-z0-9_]+\\s*[(]', 'g');
                         var calls = doc.fileInfo.content.match(regEx);
-                        var methods = "''";
+                        var methodString = "''";
 
                         if (calls !== null) {
-                            methods = '';
+                            var methods = [];
 
-                            calls = _.sortedUniq(calls.sort());
+                            methodString = '';
 
-                            calls.forEach(function(call) {
+                            calls.forEach(function(call, index) {
                                 var index = call.indexOf('.')+1;
 
-                                methods += "'" + call.substr(index, call.length-index-1) + "', ";
+                                methods.push(call.substr(index, call.length-index-1).trim()); // Remove left-paren and whitespace
                             });
 
-                            methods = methods.substr(0, methods.length-2);
+                            methods = _.sortedUniq(methods.sort());
+
+                            methods.forEach(function(method) {
+                                methodString += "'" + method + "', ";
+                            });
+
+                            methodString = methodString.substr(0, methodString.length-2); // Remove trailing comma
                         }
 
                         dependencies.spies.push({
                             dependency: dependency,
-                            methods: methods,
+                            methods: methodString,
                             variable: variable + 'Spy'
                         });
                     });
