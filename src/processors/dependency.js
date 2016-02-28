@@ -22,14 +22,44 @@ module.exports = function dependencyProcessor(log) {
                     _.sortBy(doc.requires, function(require) {
                         return require;
                     }).forEach(function(dependency) {
+                        var isInternalService = dependency.charAt(0) === '$';
+
+                        // Set variable
                         var variable = dependency;
 
-                        if (dependency.charAt(0) === '$') {
+                        if (isInternalService) {
                             variable = dependency.substr(1);
+                        }
+
+                        // Set method
+                        var escape = (isInternalService ? '\\' : '');
+                        var regEx = new RegExp('(' + escape + dependency + ')\\s*[.]\\s*[A-Za-z0-9_]+\\s*[(]', 'g');
+                        var calls = doc.fileInfo.content.match(regEx);
+                        var methodString = "''";
+
+                        if (calls !== null) {
+                            var methods = [];
+
+                            methodString = '';
+
+                            calls.forEach(function(call, index) {
+                                var index = call.indexOf('.')+1;
+
+                                methods.push(call.substr(index, call.length-index-1).trim()); // Remove left-paren and whitespace
+                            });
+
+                            methods = _.sortedUniq(methods.sort());
+
+                            methods.forEach(function(method) {
+                                methodString += "'" + method + "', ";
+                            });
+
+                            methodString = methodString.substr(0, methodString.length-2); // Remove trailing comma
                         }
 
                         dependencies.spies.push({
                             dependency: dependency,
+                            methods: methodString,
                             variable: variable + 'Spy'
                         });
                     });

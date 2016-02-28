@@ -3,7 +3,7 @@
 {% block content %}
     beforeEach(function() {
     {%- for spy in doc.dependencies.spies %}
-        {$ spy.variable $} = jasmine.createSpyObj('{$ spy.dependency $}', ['']);
+        {$ spy.variable $} = jasmine.createSpyObj('{$ spy.dependency $}', [{$ spy.methods $}]);
     {% endfor -%}
     });
 
