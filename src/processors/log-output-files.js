@@ -1,7 +1,9 @@
 'use strict';
 
 var canonicalPath = require('canonical-path'),
-    colors = require('colors/safe');
+    colors = require('colors/safe'),
+    fs = require('fs'),
+    readlineSync = require('readline-sync');
 
 /**
  * @dgProcessor dependencies
@@ -10,25 +12,49 @@ var canonicalPath = require('canonical-path'),
 module.exports = function logOutputFilesProcessor(writeFilesProcessor) {
 
     return {
-        $runAfter: ['writing-files'],
+        $runAfter: ['docs-rendered'],
+        $runBefore: ['writing-files'],
         $process: function(docs) {
-            var pathsHash = {};
+            var doc,
+                index = docs.length,
+                isWriting,
+                pathsHash = {},
+                relativePath;
 
             console.log('\nWriting boilerplate files...');
 
-            docs.forEach(function(doc) {
+            while (--index >= 0) {
+                doc = docs[index];
+                isWriting = true;
+
                 if (typeof pathsHash[doc.outputPath] !== 'undefined') {
-                    return;
+                    if (!pathsHash[doc.outputPath]) {
+                        docs.splice(index, 1);
+                    }
+                    continue;
                 }
 
-                console.log(
-                    colors.green(
-                        canonicalPath.relative(writeFilesProcessor.outputFolder, doc.outputPath)
-                    )
-                );
+                relativePath = canonicalPath.relative(writeFilesProcessor.outputFolder, doc.outputPath);
 
-                pathsHash[doc.outputPath] = true;
-            });
+                try {
+                    fs.accessSync(doc.outputPath, fs.F_OK); // Try to access file
+
+                    // Prompt user to continue if file already exists
+                    isWriting = readlineSync.keyInYNStrict(
+                        colors.red(relativePath + ' already exists; overwrite?')
+                    );
+
+                    if (isWriting) {
+                        throw {}; // Continue if user confirms overwrite
+                    }
+
+                    docs.splice(index, 1); // Otherwise, remove document from processing array
+                } catch (e) {
+                    console.log(colors.green(relativePath));
+                }
+
+                pathsHash[doc.outputPath] = isWriting;   
+            }
         }
     };
 

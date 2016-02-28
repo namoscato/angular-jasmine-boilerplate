@@ -6,21 +6,44 @@ describe('logOutputFilesProcessor', function() {
 
     var canonicalPathSpy,
         colorsSpy,
-        consoleSpy;
+        consoleSpy,
+        fsSpy,
+        readlineSyncSpy;
+
+    var canonicalPathRelativeCount;
 
     beforeEach(function() {
         canonicalPathSpy = jasmine.createSpyObj('canonical-path', ['relative']);
-        canonicalPathSpy.relative.and.returnValue('PATH');
+
+        canonicalPathRelativeCount = 0;
+        canonicalPathSpy.relative.and.callFake(function() {
+            return (++canonicalPathRelativeCount) + ' PATH';
+        });
 
         consoleSpy = jasmine.createSpyObj('console', ['log']);
 
-        colorsSpy = jasmine.createSpyObj('colors/safe', ['green']);
+        colorsSpy = jasmine.createSpyObj('colors/safe', [
+            'green',
+            'red'
+        ]);
         colorsSpy.green.and.returnValue('GREEN');
+        colorsSpy.red.and.callFake(function(arg) {
+            return '*' + arg + '*';
+        });
+
+        fsSpy = jasmine.createSpyObj('fs', ['accessSync']);
+        fsSpy.accessSync.and.throwError({ code: 'ENOENT' });
+        fsSpy.F_OK = 'F_OK';
+
+        readlineSyncSpy = jasmine.createSpyObj('readline-sync', ['keyInYNStrict']);
+        readlineSyncSpy.keyInYNStrict.and.returnValue(true);
 
         logOutputFilesProcessor.__set__({
             canonicalPath: canonicalPathSpy,
             colors: colorsSpy,
-            console: consoleSpy
+            console: consoleSpy,
+            fs: fsSpy,
+            readlineSync: readlineSyncSpy
         });
 
         target = logOutputFilesProcessor({
@@ -58,8 +81,17 @@ describe('logOutputFilesProcessor', function() {
             );
         });
 
+        it('should determine if files already exist', function() {
+            expect(fsSpy.accessSync.calls.allArgs()).toEqual([
+                [
+                    '/first/second/third',
+                    'F_OK'
+                ]
+            ]);
+        });
+
         it('should color text green', function() {
-            expect(colorsSpy.green).toHaveBeenCalledWith('PATH');
+            expect(colorsSpy.green).toHaveBeenCalledWith('1 PATH');
         });
 
         it('should output text', function() {
@@ -89,7 +121,7 @@ describe('logOutputFilesProcessor', function() {
             expect(canonicalPathSpy.relative.calls.allArgs()).toEqual([
                 [
                     '/first/second',
-                    '/first/second/third'
+                    '/first/second/fifth'
                 ],
                 [
                     '/first/second',
@@ -97,7 +129,24 @@ describe('logOutputFilesProcessor', function() {
                 ],
                 [
                     '/first/second',
-                    '/first/second/fifth'
+                    '/first/second/third'
+                ]
+            ]);
+        });
+
+        it('should determine if files already exist', function() {
+            expect(fsSpy.accessSync.calls.allArgs()).toEqual([
+                [
+                    '/first/second/fifth',
+                    'F_OK'
+                ],
+                [
+                    '/first/second/fourth',
+                    'F_OK'
+                ],
+                [
+                    '/first/second/third',
+                    'F_OK'
                 ]
             ]);
         });
@@ -108,6 +157,65 @@ describe('logOutputFilesProcessor', function() {
 
         it('should output text', function() {
             expect(consoleSpy.log.calls.count()).toEqual(4);
+        });
+    });
+
+    describe('When writing a file that already exists', function() {
+        var docs;
+
+        beforeEach(function() {
+            count = 0;
+
+            docs = [
+                {
+                    outputPath: '/first/second/third'
+                },
+                {
+                    outputPath: '/first/second/fourth'
+                },
+                {
+                    outputPath: '/first/second/third'
+                }
+            ];
+
+            fsSpy.accessSync.and.stub();
+
+            readlineSyncSpy.keyInYNStrict.and.callFake(function(arg) {
+                return arg === '*2 PATH already exists; overwrite?*';
+            });
+
+            target.$process(docs);
+        });
+
+        it('should prompt user', function() {
+            expect(readlineSyncSpy.keyInYNStrict.calls.allArgs()).toEqual([
+                [
+                    '*1 PATH already exists; overwrite?*'
+                ],
+                [
+                    '*2 PATH already exists; overwrite?*'
+                ]
+            ]);
+        });
+
+        it('should color text green', function() {
+            expect(colorsSpy.green.calls.allArgs()).toEqual([
+                [
+                    '2 PATH'
+                ]
+            ]);
+        });
+
+        it('should output text', function() {
+            expect(consoleSpy.log.calls.count()).toEqual(2);
+        });
+
+        it('should remove ignored file', function() {
+            expect(docs).toEqual([
+                {
+                    outputPath: '/first/second/fourth'
+                }
+            ]);
         });
     });
 });
