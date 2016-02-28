@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
-var colors = require('colors'),
+var canonicalPath = require('canonical-path'),
+    colors = require('colors'),
     Dgeni = require('dgeni'),
     jsonfile = require('jsonfile'),
     minimist = require('minimist');
@@ -25,7 +26,9 @@ config.basePath = options['base-path'];
 config.testPath = options['test-path'];
 
 if (!config.basePath || !config.testPath) {
-    configFile = jsonfile.readFileSync('config.json');
+    configFile = jsonfile.readFileSync(
+        canonicalPath.resolve(__dirname, '../config.json')
+    );
 
     if (!config.basePath) {
         if (!configFile.basePath) {

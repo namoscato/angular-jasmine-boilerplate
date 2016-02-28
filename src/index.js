@@ -7,7 +7,12 @@ module.exports = function(options) {
 
     var Package = dgeni.Package;
 
-    var self = new Package('angularJasmineBoilerplate', [require('dgeni-packages/ngdoc')]);
+    var self = new Package(
+        'angularJasmineBoilerplate',
+        [
+            require('dgeni-packages/ngdoc')
+        ]
+    );
 
     self.processor(require('./processors/dependency'));
     self.processor(require('./processors/description'));
@@ -20,7 +25,9 @@ module.exports = function(options) {
         readFilesProcessor.basePath = options.basePath;
         readFilesProcessor.sourceFiles = options.sources;
 
-        templateFinder.templateFolders = ['./src/templates'];
+        templateFinder.templateFolders = [
+            canonicalPath.resolve(__dirname, 'templates')
+        ];
         templateFinder.templatePatterns = [
             '${ doc.docType }.template.js'
         ];
