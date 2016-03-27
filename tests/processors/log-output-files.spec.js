@@ -163,59 +163,143 @@ describe('logOutputFilesProcessor', function() {
     describe('When writing a file that already exists', function() {
         var docs;
 
-        beforeEach(function() {
-            count = 0;
+        describe('without a force option', function() {
+            describe('in interactive mode', function() {
+                beforeEach(function() {
+                    count = 0;
 
-            docs = [
-                {
-                    outputPath: '/first/second/third'
-                },
-                {
-                    outputPath: '/first/second/fourth'
-                },
-                {
-                    outputPath: '/first/second/third'
-                }
-            ];
+                    docs = [
+                        {
+                            outputPath: '/first/second/third'
+                        },
+                        {
+                            outputPath: '/first/second/fourth'
+                        },
+                        {
+                            outputPath: '/first/second/third'
+                        }
+                    ];
 
-            fsSpy.accessSync.and.stub();
+                    fsSpy.accessSync.and.stub();
 
-            readlineSyncSpy.keyInYNStrict.and.callFake(function(arg) {
-                return arg === '*2 PATH already exists; overwrite?*';
+                    readlineSyncSpy.keyInYNStrict.and.callFake(function(arg) {
+                        return arg === '*2 PATH already exists; overwrite?*';
+                    });
+
+                    target.$process(docs);
+                });
+
+                it('should prompt user', function() {
+                    expect(readlineSyncSpy.keyInYNStrict.calls.allArgs()).toEqual([
+                        [
+                            '*1 PATH already exists; overwrite?*'
+                        ],
+                        [
+                            '*2 PATH already exists; overwrite?*'
+                        ]
+                    ]);
+                });
+
+                it('should color text green', function() {
+                    expect(colorsSpy.green.calls.allArgs()).toEqual([
+                        [
+                            '2 PATH'
+                        ]
+                    ]);
+                });
+
+                it('should output text', function() {
+                    expect(consoleSpy.log.calls.count()).toEqual(2);
+                });
+
+                it('should remove ignored file', function() {
+                    expect(docs).toEqual([
+                        {
+                            outputPath: '/first/second/fourth'
+                        }
+                    ]);
+                });
             });
 
-            target.$process(docs);
+            describe('in non-interactive mode', function() {
+                beforeEach(function() {
+                    count = 0;
+
+                    docs = [
+                        {
+                            outputPath: '/first/second/third'
+                        },
+                        {
+                            outputPath: '/first/second/fourth'
+                        }
+                    ];
+
+                    fsSpy.accessSync.and.stub();
+
+                    target.nonInteractive = true;
+
+                    target.$process(docs);
+                });
+
+                it('should not prompt user', function() {
+                    expect(readlineSyncSpy.keyInYNStrict.calls.count()).toEqual(0);
+                });
+
+                it('should color text red', function() {
+                    expect(colorsSpy.red.calls.allArgs()).toEqual([
+                        [
+                            '1 PATH already exists'
+                        ],
+                        [
+                            '2 PATH already exists'
+                        ]
+                    ]);
+                });
+
+                it('should output text', function() {
+                    expect(consoleSpy.log.calls.count()).toEqual(3);
+                });
+
+                it('should remove ignored file', function() {
+                    expect(docs).toEqual([]);
+                });
+            });
         });
 
-        it('should prompt user', function() {
-            expect(readlineSyncSpy.keyInYNStrict.calls.allArgs()).toEqual([
-                [
-                    '*1 PATH already exists; overwrite?*'
-                ],
-                [
-                    '*2 PATH already exists; overwrite?*'
-                ]
-            ]);
-        });
+        describe('with a force option', function() {
+            beforeEach(function() {
+                docs = [
+                    {
+                        outputPath: '/first/second/third'
+                    },
+                    {
+                        outputPath: '/first/second/fourth'
+                    }
+                ];
 
-        it('should color text green', function() {
-            expect(colorsSpy.green.calls.allArgs()).toEqual([
-                [
-                    '2 PATH'
-                ]
-            ]);
-        });
+                target.force = true;
 
-        it('should output text', function() {
-            expect(consoleSpy.log.calls.count()).toEqual(2);
-        });
+                target.$process(docs);
+            });
 
-        it('should remove ignored file', function() {
-            expect(docs).toEqual([
-                {
-                    outputPath: '/first/second/fourth'
-                }
-            ]);
+            it('should not attempt to access files', function() {
+                expect(fsSpy.accessSync.calls.count()).toEqual(0);
+            });
+
+            it('should color text green', function() {
+                expect(colorsSpy.green.calls.allArgs()).toEqual([
+                    [
+                        '1 PATH'
+                    ],
+                    [
+                        '2 PATH'
+                    ]
+                ]);
+            });
+
+            it('should output text', function() {
+                expect(consoleSpy.log.calls.count()).toEqual(3);
+            });
         });
     });
 });

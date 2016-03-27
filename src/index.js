@@ -19,7 +19,7 @@ module.exports = function(options) {
     self.processor(require('./processors/log-output-files'));
     self.processor(require('./processors/log-source-files'));
 
-    self.config(function(computeIdsProcessor, computePathsProcessor, getAliases, log, readFilesProcessor, templateFinder, writeFilesProcessor) {
+    self.config(function(computeIdsProcessor, computePathsProcessor, getAliases, log, logOutputFilesProcessor, readFilesProcessor, templateFinder, writeFilesProcessor) {
         log.remove(log.transports.Console);
 
         readFilesProcessor.basePath = options.basePath;
@@ -60,6 +60,9 @@ module.exports = function(options) {
                 );
             }
         });
+
+        logOutputFilesProcessor.force = options.force;
+        logOutputFilesProcessor.nonInteractive = options.nonInteractive;
     });
 
     return self;

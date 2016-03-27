@@ -12,6 +12,10 @@ var canonicalPath = require('canonical-path'),
 module.exports = function logOutputFilesProcessor(writeFilesProcessor) {
 
     return {
+        $validate: {
+            force: { presence: true },
+            nonInteractive: { presence: true }
+        },
         $runAfter: ['docs-rendered'],
         $runBefore: ['writing-files'],
         $process: function(docs) {
@@ -37,15 +41,22 @@ module.exports = function logOutputFilesProcessor(writeFilesProcessor) {
                 relativePath = canonicalPath.relative(writeFilesProcessor.outputFolder, doc.outputPath);
 
                 try {
+                    if (this.force) { // Always overwrite if force flag is set
+                        throw {};
+                    }
+
                     fs.accessSync(doc.outputPath, fs.F_OK); // Try to access file
 
-                    // Prompt user to continue if file already exists
-                    isWriting = readlineSync.keyInYNStrict(
-                        colors.red(relativePath + ' already exists; overwrite?')
-                    );
+                    if (this.nonInteractive) { // Output error if file already exists
+                        console.log(colors.red(relativePath + ' already exists'));
+                    } else { // Otherwise, prompt user to continue
+                        isWriting = readlineSync.keyInYNStrict(
+                            colors.red(relativePath + ' already exists; overwrite?')
+                        );
 
-                    if (isWriting) {
-                        throw {}; // Continue if user confirms overwrite
+                        if (isWriting) { // Continue if user confirms overwrite
+                            throw {};
+                        }
                     }
 
                     docs.splice(index, 1); // Otherwise, remove document from processing array

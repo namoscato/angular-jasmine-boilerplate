@@ -8,14 +8,20 @@ var canonicalPath = require('canonical-path'),
 
 var config = {},
     configFile,
+    configPath,
     dgeni,
     options,
     summary;
 
 options = minimist(process.argv.slice(2), {
-    boolean: 'save',
+    boolean: [
+        'force',
+        'non-interactive',
+        'save'
+    ],
     string: [
         'base-path',
+        'config',
         'test-path'
     ]
 });
@@ -26,9 +32,13 @@ config.basePath = options['base-path'];
 config.testPath = options['test-path'];
 
 if (!config.basePath || !config.testPath) {
-    configFile = jsonfile.readFileSync(
-        canonicalPath.resolve(__dirname, '../config.json')
-    );
+    if (options['config']) {
+        configPath = options['config'];
+    } else {
+        configPath = canonicalPath.resolve(__dirname, '../config.json');
+    }
+
+    configFile = jsonfile.readFileSync(configPath);
 
     if (!config.basePath) {
         if (!configFile.basePath) {
@@ -54,8 +64,10 @@ if (options._.length > 0) {
     dgeni = new Dgeni([
         require('../src/index')({
             basePath: config.basePath,
-            testPath: config.testPath,
-            sources: options._
+            force: options.force,
+            nonInteractive: options['non-interactive'],
+            sources: options._,
+            testPath: config.testPath
         })
     ]);
 
