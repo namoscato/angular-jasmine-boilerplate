@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * @dgProcessor description
+ * @dgProcessor descriptionProcessor
  * @description Appends the truncated description summary
  */
 module.exports = function descriptionProcessor() {
