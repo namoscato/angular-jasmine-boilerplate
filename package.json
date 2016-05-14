@@ -16,13 +16,14 @@
   "dependencies": {
     "canonical-path": "0.0.2",
     "colors": "^1.1.2",
-    "dgeni": "^0.4.1",
-    "dgeni-packages": "^0.12.0",
+    "dgeni": "^0.4.2",
+    "dgeni-packages": "^0.13.0",
     "fs": "0.0.2",
-    "jsonfile": "^2.2.3",
-    "lodash": "^4.5.1",
+    "jsonfile": "^2.3.1",
+    "lodash": "^4.12.0",
     "minimist": "^1.2.0",
-    "readline-sync": "^1.4.1",
+    "nlp_compromise": "^4.10.5",
+    "readline-sync": "^1.4.2",
     "rewire": "^2.5.1"
   },
   "devDependencies": {
