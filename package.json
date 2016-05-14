@@ -1,7 +1,7 @@
 {
   "name": "angular-jasmine-boilerplate",
   "license": "MIT",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "AngularJS Jasmine Boilerplate Generator",
   "bin": {
     "angular-jasmine-boilerplate": "bin/generate.js"
