@@ -95,7 +95,7 @@ The description of an annotated method is used to populate the name of the corre
 is represented in the generated Jasmine boilerplate as:
 
 ```js
-describe('When acting on the specified document', function() {
+describe('When acting on the specified argument', function() {
     ...
 });
 ```
