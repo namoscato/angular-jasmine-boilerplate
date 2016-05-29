@@ -14,8 +14,8 @@ module.exports = function dependencyProcessor(log) {
      * 1. Method name
      * 2. Optional promise chain method name
      */
-    var _methodRegularExpression = '\\s*\\.\\s*(\\$?[A-Za-z0-9_]+)\\s*\\([^\\)]+\\)(?:\\s*\\.\\s*(then|catch|finally)\\s*\\()?';
-                                  //00000000000111111111111111111100000000000000000000000000000002222222222222222222200000000
+    var _methodRegularExpression = '\\s*\\.\\s*(\\$?[A-Za-z0-9_]+)\\s*\\([^\\)]*\\)(?:\\s*\\.\\s*(then|catch|finally)\\s*\\()?';
+                                  //000000000001111111111111111111000000000000000000000000000000022222222222222222222000000000
 
     return {
         $runAfter: ['tags-extracted'],
@@ -25,7 +25,6 @@ module.exports = function dependencyProcessor(log) {
                 var additionalVariables = [];
                 var dependencies = {
                     spies: [],
-                    ngMock: {},
                     variables: []
                 };
 
