@@ -27,7 +27,7 @@ describe('dependencyProcessor', function() {
                 {
                     dependencies: {
                         spies: [],
-                        variableDefinitions: ''
+                        variables: []
                     }
                 }
             ]);
@@ -65,33 +65,47 @@ describe('dependencyProcessor', function() {
                 expect(docs[0].dependencies).toEqual({
                     spies: [
                         {
-                            dependency: 'dep',
-                            methods : "''", 
+                            name: 'dep',
+                            methods: "''",
+                            methodSpies: [],
                             variable: 'depSpy'
                         }
                     ],
-                    variableDefinitions: "\n    var depSpy;\n"
+                    variables: [
+                        [
+                            'depSpy'
+                        ]
+                    ]
                 });
 
                 expect(docs[1].dependencies).toEqual({
                     spies: [
                         {
-                            dependency: '$dep',
-                            methods : "''",
+                            name: '$dep',
+                            methods: "''",
+                            methodSpies: [],
                             variable: 'depSpy'
                         },
                         {
-                            dependency: 'aDep',
-                            methods : "''",
+                            name: 'aDep',
+                            methods: "''",
+                            methodSpies: [],
                             variable: 'aDepSpy'
                         },
                         {
-                            dependency: 'bDep',
-                            methods : "''",
+                            name: 'bDep',
+                            methods: "''",
+                            methodSpies: [],
                             variable: 'bDepSpy'
                         }
                     ],
-                    variableDefinitions: "\n    var depSpy;\n    var aDepSpy;\n    var bDepSpy;\n"
+                    variables: [
+                        [
+                            'depSpy',
+                            'aDepSpy',
+                            'bDepSpy',
+                        ]
+                    ]
                 });
             });
         });
@@ -101,20 +115,16 @@ describe('dependencyProcessor', function() {
                 docs = [
                     {
                         fileInfo: {
-                            content: 'no method calls'
-                        },
-                        requires: [
-                            'dep'
-                        ]
-                    },
-                    {
-                        fileInfo: {
-                            content: '$dep.(); $depinvalidMethodCall(); $dep.property; $dep.method1(); aDep  .  method2(); aDep.method3(); aDep .  method3(); aDep.method3  (); bdep.noMatchOnLowercaseD(); bDep.Z   (); bDep.A();'
+                            content: '$dep.(); $depinvalidMethodCall(); $dep.property; $dep.$method1(); ' + 
+                                     'aDep  .  method2(); aDep.method3(arg); aDep .  method3(); aDep.method3  (); ' + 
+                                     'bdep.noMatchOnLowercaseD(); bDep.\nZ   (); bDep.A(); bDep.A(); ' +
+                                     'cDep.method2().catch() cDep.method1().then(function() {}) cDep.method1().then() cDep.method1.catch cDep . method1 () .  finally() cDep.method2.then'
                         },
                         requires: [
                             'bDep',
                             '$dep',
-                            'aDep'
+                            'aDep',
+                            'cDep',
                         ]
                     }
                 ];
@@ -126,33 +136,57 @@ describe('dependencyProcessor', function() {
                 expect(docs[0].dependencies).toEqual({
                     spies: [
                         {
-                            dependency: 'dep',
-                            methods : "''", 
-                            variable: 'depSpy'
-                        }
-                    ],
-                    variableDefinitions: "\n    var depSpy;\n"
-                });
-
-                expect(docs[1].dependencies).toEqual({
-                    spies: [
-                        {
-                            dependency: '$dep',
-                            methods : "'method1'",
+                            name: '$dep',
+                            methods: "'$method1'",
+                            methodSpies: [],
                             variable: 'depSpy'
                         },
                         {
-                            dependency: 'aDep',
-                            methods : "'method2', 'method3'",
+                            name: 'aDep',
+                            methods: "'method2', 'method3'",
+                            methodSpies: [],
                             variable: 'aDepSpy'
                         },
                         {
-                            dependency: 'bDep',
-                            methods : "'A', 'Z'",
+                            name: 'bDep',
+                            methods: "'A', 'Z'",
+                            methodSpies: [],
                             variable: 'bDepSpy'
+                        },
+                        {
+                            name: 'cDep',
+                            methods: "'method1', 'method2'",
+                            methodSpies: [
+                                {
+                                    name: 'cDepMethod1',
+                                    methods: "'finally', 'then'",
+                                    methodSpies: [],
+                                    variable: 'cDepMethod1Spy',
+                                    methodName: 'method1'
+                                },
+                                {
+                                    name: 'cDepMethod2',
+                                    methods: "'catch'",
+                                    methodSpies: [],
+                                    variable: 'cDepMethod2Spy',
+                                    methodName: 'method2'
+                                }
+                            ],
+                            variable: 'cDepSpy'
                         }
                     ],
-                    variableDefinitions: "\n    var depSpy;\n    var aDepSpy;\n    var bDepSpy;\n"
+                    variables: [
+                        [
+                            'depSpy',
+                            'aDepSpy',
+                            'bDepSpy',
+                            'cDepSpy',
+                        ],
+                        [
+                            'cDepMethod1Spy',
+                            'cDepMethod2Spy'
+                        ]
+                    ]
                 });
             });
         });

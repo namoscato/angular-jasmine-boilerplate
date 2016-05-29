@@ -1,7 +1,7 @@
 'use strict';
 
-var canonicalPath = require('canonical-path'),
-    dgeni = require('dgeni');
+var canonicalPath = require('canonical-path');
+var dgeni = require('dgeni');
 
 module.exports = function(options) {
 
@@ -13,6 +13,11 @@ module.exports = function(options) {
             require('dgeni-packages/ngdoc')
         ]
     );
+
+    var _docTypes = [
+        'controller',
+        'service'
+    ];
 
     self.processor(require('./processors/dependency'));
     self.processor(require('./processors/description'));
@@ -35,23 +40,17 @@ module.exports = function(options) {
         writeFilesProcessor.outputFolder = options.testPath;
 
         computeIdsProcessor.idTemplates.push({
-            docTypes: [
-                'controller',
-                'service'
-            ],
+            docTypes: _docTypes,
             idTemplate: 'module:${module}.${docType}:${name}',
             getAliases: getAliases
         });
 
         computePathsProcessor.pathTemplates.push({
-            docTypes: [
-                'controller',
-                'service'
-            ],
+            docTypes: _docTypes,
             pathTemplate: '${name}',
             getOutputPath: function(doc) {
-                var baseName = doc.fileInfo.baseName,
-                    relativePath = doc.fileInfo.relativePath.slice(0, -baseName.length - 3);
+                var baseName = doc.fileInfo.baseName;
+                var relativePath = doc.fileInfo.relativePath.slice(0, -baseName.length - 3);
 
                 return canonicalPath.resolve(
                     options.testPath,
