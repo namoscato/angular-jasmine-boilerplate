@@ -3,11 +3,11 @@
 {% block content %}
     beforeEach(function() {
     {%- for spy in doc.dependencies.spies %}
-        {$ spy.variable $} = jasmine.createSpyObj('{$ spy.name $}', [{$ spy.methods $}]);
+        {$ spy.variable $} = jasmine.createSpyObj('{$ spy.name $}', [{$ spy.methodString $}]);
 
         {%- for methodSpy in spy.methodSpies %}
 
-        {$ methodSpy.variable $} = jasmine.createSpyObj('{$ spy.variable $}.{$ methodSpy.methodName $}', [{$ methodSpy.methods $}]);
+        {$ methodSpy.variable $} = jasmine.createSpyObj('{$ spy.variable $}.{$ methodSpy.methodName $}', [{$ methodSpy.methodString $}]);
         {$ spy.variable $}.{$ methodSpy.methodName $}.and.returnValue({$ methodSpy.variable $});
         {%- endfor %}
 {% endfor %}    });
