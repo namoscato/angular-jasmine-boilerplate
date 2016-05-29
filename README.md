@@ -35,6 +35,12 @@ Generates boilerplate [Jasmine](http://jasmine.github.io/) tests from [annotated
 
 This utility is also available for [Sublime Text](https://github.com/namoscato/angular-jasmine-boilerplate-sublime).
 
+## Supports
+
+* [controllers](https://docs.angularjs.org/guide/controller)
+* [services](https://docs.angularjs.org/guide/providers#service-recipe)
+* [component controllers](https://docs.angularjs.org/guide/component)
+
 ## Features
 
 This utility leverages a handful of conventional [`ngdoc`](https://github.com/angular/dgeni-packages/tree/master/ngdoc) tags to generate boilerplate Jasmine tests.
@@ -43,7 +49,7 @@ This utility leverages a handful of conventional [`ngdoc`](https://github.com/an
 
 Determines the template used to process an item.
 
-When applied to an AngularJS core component, the value of this tag can be `controller` or `service` to specify a [controller](https://docs.angularjs.org/guide/controller) or [service](https://docs.angularjs.org/guide/providers#service-recipe) respectively.
+When applied to an AngularJS core component, the value of this tag can be `controller`, `service`, or `componentController` to specify a [controller](https://docs.angularjs.org/guide/controller), [service](https://docs.angularjs.org/guide/providers#service-recipe), or [component’s controller](https://docs.angularjs.org/guide/component) respectively.
 
 All public methods with an `@ngdoc` value of `method` generate a  [nested `describe` block](http://jasmine.github.io/2.4/introduction.html#section-Nesting_<code>describe</code>_Blocks) that will ultimately be used to test the particular method in isolation. Private methods not exposed on scope (and without an `@ngdoc` tag) will not have a corresponding `describe` block as they can only be tested via another public method.
 
@@ -189,3 +195,9 @@ The value of this tag is included in a `beforeEach` function at the top of the g
 ```js
 beforeEach(module('myApp'));
 ```
+
+### `@component`
+
+Specifies the name of the [component](https://docs.angularjs.org/guide/component) associated with the processed component controller.
+
+The name of the related component is passed as the first parameter to [`$componentController`](https://docs.angularjs.org/api/ngMock/service/$componentController) during the test setup.

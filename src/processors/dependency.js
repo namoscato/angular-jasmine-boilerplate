@@ -24,6 +24,7 @@ module.exports = function dependencyProcessor(log) {
             docs.forEach(function(doc) {
                 var additionalVariables = [];
                 var dependencies = {
+                    coreSpies: {},
                     spies: [],
                     variables: []
                 };
@@ -71,11 +72,17 @@ module.exports = function dependencyProcessor(log) {
                             additionalVariables.push(dependencyObject.variable);
                         }
 
-                        dependencies.spies.push(createDependencyObject(
+                        dependencyObject = createDependencyObject(
                             dependency,
                             methods,
                             methodSpies
-                        ));
+                        );
+
+                        if (dependency === '$scope') {
+                            dependencies.coreSpies[dependency] = dependencyObject;
+                        }
+
+                        dependencies.spies.push(dependencyObject);
                     });
 
                     pushVariables(dependencies, _.map(dependencies.spies, 'variable'));
@@ -110,11 +117,10 @@ module.exports = function dependencyProcessor(log) {
 
         methods = _.sortedUniq(methods.sort());
 
-        methods = "'" + methods.join("', '") + "'";
-
         return {
             name: dependency,
             methods: methods,
+            methodString: "'" + methods.join("', '") + "'",
             methodSpies: methodSpies.sort(getCompareFunction('name')),
             variable: getVariableName(dependency, !areMethodsUndefined) // Append "Spy" if `methods` was defined
         };
