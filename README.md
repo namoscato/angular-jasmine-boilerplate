@@ -33,7 +33,7 @@ Generates boilerplate [Jasmine](http://jasmine.github.io/) tests from [annotated
 
 ## Text Editor Packages
 
-This utility is also available for [Sublime Text](https://github.com/namoscato/angular-jasmine-boilerplate-sublime).
+This utility is also available for [Sublime Text](https://github.com/namoscato/angular-jasmine-boilerplate-sublime) and [Atom](https://github.com/namoscato/angular-jasmine-boilerplate-atom).
 
 ## Supports
 
